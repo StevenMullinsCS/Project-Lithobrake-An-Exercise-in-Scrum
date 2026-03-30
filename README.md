@@ -3,6 +3,19 @@ A galaga-like arcade game for our team's Software Engineering I project. Develop
 
 Lithobreaking [noun]: Deceleration of a falling object due to impact with the ground.
 
+## Branch Setup
+---
+### feature branches:
+| Branch | Purpose |
+|------|------|
+| main | stable builds only |
+| sprint | each sprint will have its own branch, do not merge here until PO clears the dev |
+| dev | each sprint will have its own dev branch, merge here |
+| feature/<name> | features, fixes, experiments |
+
+---
+
+
 ### Source Control Strategy
 * Vertical Slicing
 * Don't carry unfinished work into the next sprint
@@ -19,3 +32,14 @@ feat: add enemy animation
 fix: prevent null ref on pickup
 refactor: cleanup input handling
 ```
+
+## Getting It in VSCode
+
+1. In GitHub, click the green **Code** button, select **HTTPS**, then copy the link.
+2. In VSCode, press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) to open the command palette.
+3. Type `>Git: Clone` and select **Clone from GitHub**.
+4. Paste the link you copied from GitHub and press **Enter**.
+5. When prompted, choose a folder in your project directory to clone it into.
+
+
+
