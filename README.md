@@ -9,8 +9,8 @@ Lithobreaking [noun]: Deceleration of a falling object due to impact with the gr
 | Branch | Purpose |
 |------|------|
 | main | stable builds only |
-| sprint | each sprint will have its own branch, do not merge here until PO clears the dev |
-| dev | each sprint will have its own dev branch, merge here |
+| sprint# | each sprint will have its own branch, do not merge here until PO clears the dev |
+| dev-s# | each sprint will have its own dev branch, merge here when making chages |
 | feature/<name> | features, fixes, experiments |
 
 ---
