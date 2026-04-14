@@ -73,8 +73,7 @@ function Player()
     {
         return;
     }
-    // Clears the canvas of the rectangle. Without this, it smears across screen.
-    //ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
     // Once input is detected, the X position is moved based on left/right key press.
     // Value on the right determines the speed.
     if (rightDown && playerX < canvasWidth - playerWidth- 15) // boundary for right
