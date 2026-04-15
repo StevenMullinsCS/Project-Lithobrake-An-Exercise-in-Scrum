@@ -9,11 +9,23 @@
     </head>
 </html>
 <body>
-    <!--Canvas ID is "canvas"-->
-    <canvas id="canvas" width="400" height="800" style="border: 1px solid black;"></canvas>
+   
     <script type="module" src="main.js"></script>
-    <div id ="startPage">
-        <h1 id ="startHeader">GALAGA</h1>
-        <button id="startButton" onclick="Start()">START GAME</button>
+
+
+    <canvas id="canvas" width="400" height="800"></canvas>
+
+    <div id ="startPage" class="pageOverlay">
+        <h1 id ="pageHeader">GALAGA</h1>
+        <button id="button" onclick="Start()">START GAME</button>
     </div>
+
+    
+    <div id="gameOverPage" class="pageOverlay" style="display:none;">
+        <h1 id="pageHeaderTwo">GAME OVER</h1>
+        <button id="buttonTwo" onclick="Restart()">RESTART</button>
+    </div>
+
+
+
 </body>
