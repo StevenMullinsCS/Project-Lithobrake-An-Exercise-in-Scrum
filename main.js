@@ -1,5 +1,5 @@
 import { Shoot, UpdateProjectile, DrawProjectile } from "./modules/projectile.js"
-import { DrawEnemy } from "./modules/enemy.js"
+import { DrawEnemy, initEnemies } from "./modules/enemy.js"
 
 var canvas;
 var ctx;
@@ -97,13 +97,14 @@ function GameLoop()
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    DrawEnemy(ctx, canvasWidth, canvasHeight);
+    DrawEnemy(ctx);
     Player();
     UpdateProjectile();
     DrawProjectile(ctx);
 }
 
 Init();
+initEnemies(canvasWidth, canvasHeight);
 setInterval(GameLoop, 10);
 
 // Event listeners that wait for any keypress. Once a key is pressed or released, corresponding function from above is called.
