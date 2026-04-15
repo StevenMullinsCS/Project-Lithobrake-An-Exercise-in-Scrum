@@ -6,7 +6,7 @@ var canvasWidth; // canvas width for boundary calculation
 var canvasHeight;
 var playerWidth = 40; // replaced both width and height names for these variable names
 var playerHeight = 40;
-const PLAYER_SPEED = 10;   // Speed at which the player moves.
+const PLAYER_SPEED = 5;   // Speed at which the player moves.
 let playerX = 175;             // Center/Home position for player. Outside of player scope to allow for persistance after changes.
 let playerY = 700;
 let rightDown = false;
@@ -22,6 +22,7 @@ function onKeyDown(evt)
     {
         Shoot(playerX);
     }
+    
     if (evt.keyCode == 37)
         leftDown = true;
     else if (evt.keyCode == 39)
