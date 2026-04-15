@@ -1,4 +1,5 @@
 import { Shoot, UpdateProjectile, DrawProjectile } from "./modules/projectile.js"
+import { DrawEnemy } from "./modules/enemy.js"
 
 var canvas;
 var ctx;
@@ -13,6 +14,7 @@ let rightDown = false;
 let leftDown = false;
 var color = "rgb(243, 239, 239)";
 var gameStarted = false;
+
 
 // If either key press is detected, corresponding bool is set to true.
 function onKeyDown(evt)
@@ -95,6 +97,7 @@ function GameLoop()
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+    DrawEnemy(ctx, canvasWidth, canvasHeight);
     Player();
     UpdateProjectile();
     DrawProjectile(ctx);
