@@ -1,9 +1,10 @@
 export const name = "enemy";
 
 let enemies = [];
+export { enemies };
 // If enemy dimensions are too large, they may become clumped up depending on the number of rows and columns, be mindful of this when changing these variables.
-var enemyWidth = 20;
-var enemyHeight = 20;
+var enemyWidth = 25;
+var enemyHeight = 25;
 var enemyRows = 5;
 var enemyCols = 5;
 var padding = 25;     // Adjusts the space between the enemies.
@@ -40,7 +41,6 @@ export function DrawEnemy(ctx)
     for (let i = 0; i < enemies.length; i++)
     {
         const e = enemies[i];
-        console.log(e);
         ctx.beginPath();
         ctx.rect(e.x, e.y, enemyWidth, enemyHeight);
         ctx.closePath();
