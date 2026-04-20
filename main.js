@@ -74,7 +74,6 @@ function TouchControls() {
         }
     });
 
-    //slowly pan at the player speed
     hammer.on('panmove', (e) => {
         if (e.deltaX < 0) {
             leftDown = true;
@@ -90,7 +89,6 @@ function TouchControls() {
         rightDown = false;
     });
 
-    // Tap = shoot
     hammer.on('tap', () => {
         Shoot(playerX);
     });
