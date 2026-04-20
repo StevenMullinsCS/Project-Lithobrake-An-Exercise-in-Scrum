@@ -13,27 +13,22 @@ body
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;             /* Makes the body the full height of the screen */
-    margin: 0;                 /* Removes the default white gap at the edges */
+    height: 100vh;             
+    margin: 0;                 
     overflow: hidden;
 }
 
 .pageOverlay {
     position:absolute;
     color: white;
-    /* This ensures everything stays centered as the box grows */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
     background-color:black;
     border: 5px solid white;
-
     width: 300px;
     height: 200px;
-
-
 }
 
 #pageHeader

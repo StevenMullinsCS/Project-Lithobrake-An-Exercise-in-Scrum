@@ -60,7 +60,7 @@ function onKeyUp(evt)
 }
 
 //get elements of the canvas
-//set variables WIDTH and HEIGHT to width and height
+
 
 //---- Game State Functions --//
 function Init()
@@ -119,15 +119,13 @@ function GameOver()
     gameOverPage.classList.remove('fade-in');
     gameOverPage.classList.add('fade-out');
 
-    // 2. The "Reflow" Trick: We use a tiny timeout to force the browser 
-    // to render the hidden state before we trigger the visible state.
+
     setTimeout(() => {
         gameOverPage.classList.remove('fade-out');
         gameOverPage.classList.add('fade-in');
-    }, 50); // 50ms is the sweet spot for browser rendering
+    }, 50); 
 }
-//draw a square for the player
-//x cord, y cord, width, and height
+
 
 //---- Player and Drawing Functions --//
 function Player()
@@ -149,15 +147,18 @@ function Player()
     ctx.fill();
 }
 
+
+// Draws the live icon and the number of lives on the 
+// left side on the screen. When the player gets close 
+// it will fade so that it can be clean gameplay.
 function DrawLives()
 {
-    ctx.clearRect(0, 750, 150, 50);
+    ctx.clearRect(0, 750, 150, 50); 
 
-    let isNearHUD = (playerX < 65); 
+    let isNearHUD = (playerX < 65);  
 
     if (isNearHUD) 
     {
-        console.log("HUD Fading!"); // Check your console for this message!
         ctx.globalAlpha = 0.2;
     } 
     else 
@@ -165,6 +166,8 @@ function DrawLives()
         ctx.globalAlpha = 1.0;
     }
 
+
+    // the mini icon
 
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -174,6 +177,7 @@ function DrawLives()
     ctx.closePath();
     ctx.fill();
 
+    // draws the number of live "x3"
 
     ctx.fillStyle = "white";
     ctx.font = "16px Arial";
@@ -183,9 +187,6 @@ function DrawLives()
     ctx.globalAlpha = 1.0;
         
 }
-
-
-
 
 //main game loop, everything that needs to run in an interval needs to go here
 
@@ -241,6 +242,10 @@ window.Start = Start;
 window.DrawLives = DrawLives;
 window.GameOver = GameOver;
 window.Restart = Restart;
+// this allows the lives variable to be changed 
+// inside the code manually so i can chnage the 
+// lives to 0 in order to trigger the game over screen. 
+// Once collision detection is added this will be no longer needed.
 Object.defineProperty(window, 'lives', {
     get: () => lives,
     set: (val) => { lives = val; DrawLives(); }
