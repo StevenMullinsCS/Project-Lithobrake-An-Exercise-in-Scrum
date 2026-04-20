@@ -126,7 +126,6 @@ function GameOver()
 //---- Player and Drawing Functions --//
 function Player()
 {
-
     // Once input is detected, the X position is moved based on left/right key press.
     // Value on the right determines the speed.
     if (rightDown && playerX < canvasWidth - playerWidth- 15) // boundary for right
@@ -195,7 +194,6 @@ function GameLoop()
     }
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
     DrawEnemy(ctx);
     Player();
     DrawLives();
