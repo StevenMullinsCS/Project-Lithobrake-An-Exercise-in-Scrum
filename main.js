@@ -6,6 +6,8 @@ var canvas;
 var ctx;
 var canvasWidth; // canvas width for boundary calculation
 var canvasHeight;
+let hammer;
+
 
 //---- Player -- //
 var playerWidth = 40; // replaced both width and height names for these variable names
@@ -56,7 +58,43 @@ function onKeyUp(evt)
         rightDown = false;
 }
 
-//get elements of the canvas
+//sourced from:
+//https://github.com/hammerjs/hammer.js/
+//ideally nothing more needs to be done with it...
+function TouchControls() {
+    hammer.get('pan').set({ direction: Hammer.DIRECTION_HORIZONTAL });
+
+    hammer.on('panstart', (e) => {
+        if (e.center.x < canvasWidth / 2) {
+            leftDown = true;
+            rightDown = false;
+        } else {
+            rightDown = true;
+            leftDown = false;
+        }
+    });
+
+    //slowly pan at the player speed
+    hammer.on('panmove', (e) => {
+        if (e.deltaX < 0) {
+            leftDown = true;
+            rightDown = false;
+        } else if (e.deltaX > 0) {
+            rightDown = true;
+            leftDown = false;
+        }
+    });
+
+    hammer.on('panend', () => {
+        leftDown = false;
+        rightDown = false;
+    });
+
+    // Tap = shoot
+    hammer.on('tap', () => {
+        Shoot(playerX);
+    });
+}
 
 
 //---- Game State Functions --//
@@ -66,6 +104,10 @@ function Init()
     ctx = document.getElementById("canvas").getContext("2d");
     canvasWidth = canvas.width;
     canvasHeight = canvas.height;
+
+    hammer = new window.Hammer(canvas);
+
+    TouchControls();
 }
 
 function Start()
