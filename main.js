@@ -103,8 +103,8 @@ function Init()
     canvasWidth = canvas.width;
     canvasHeight = canvas.height;
 
+    //hammer stuff
     hammer = new window.Hammer(canvas);
-
     TouchControls();
 }
 
