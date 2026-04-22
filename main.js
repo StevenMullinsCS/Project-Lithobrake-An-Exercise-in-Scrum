@@ -237,15 +237,13 @@ function ResetPlayer()
 
    
     BlinkPlayer();
-
-
-    
 }
 
 function BlinkPlayer()
 {
     
     isBlinking = true; // it starts blinking immediaelty
+    VulnerableTimer();
 
 
     // the interval will change the isBlinking value for a set of 250 ms 
@@ -268,13 +266,6 @@ function VulnerableTimer()
 {
     isInvulnerable = true; 
 
-    // when collision for player logic gets added 
-    // if(isInvulnerable == true && collisionDetected) 
-    // {
-    //     NO DAMAGE IS TAKEN
-    //     damageTaken = false; (or something like this)
-    // }
-    // This logic should be added to the collision detection function 
     setTimeout(() => {
         isInvulnerable = false; 
     }, 4000);
@@ -299,6 +290,11 @@ function GameLoop()
     EnemyProjBehavior(ctx);
     if(EnemyCheckCollision(playerX, playerY, playerWidth, playerHeight))//collison of enemy or collision of projectile
     {
+        if (isInvulnerable)
+        {
+            return;
+        }
+
         lives -= 1;
 
         if(lives > 0)
@@ -311,18 +307,6 @@ function GameLoop()
             return
         }
     }
-
-    
-
-    if (lives < tempLives) // this is a placeholder for the collision detection, once it is added this will be removed and the ResetPlayer function will be called in the collision detection function.
-    {
-        ResetPlayer();
-        tempLives = lives; // update tempLives during collision or in this case the manually lives change.
-        return;
-        }
-
-    tempLives = lives; // updates tempLives so when collision doesnt happpen so it doesnt trigger the reset player function.
-
 
     if (lives <= 0)
     {
