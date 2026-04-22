@@ -31,6 +31,15 @@ const iconHeight = 20;
 const iconX = 15; // 
 const iconY = 720;  
 
+let tempLives = lives; // stored initial lives to be compared later
+
+
+//---- Invisibility Frames --// 
+const invisibleTimer = 4;
+let isBlinking = false; // tracks if player is currently invulnerable
+let isInvulnerable = false;
+
+
 
 // If either key press is detected, corresponding bool is set to true.
 function onKeyDown(evt)
@@ -133,6 +142,9 @@ function Player()
     else if (leftDown && playerX > 15) // boundary for left
         playerX -= PLAYER_SPEED;
 
+    
+    ctx.globalAlpha = isBlinking ? 0.2 : 1.0; //This is being constantly changed by the isBlinking variable in the BlinkPlayer Function.
+
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(playerX + (playerWidth / 2), playerY); 
@@ -183,6 +195,57 @@ function DrawLives()
         
 }
 
+
+function ResetPlayer()
+{
+    playerX = 175;             
+    playerY = 700;
+
+   
+    BlinkPlayer();
+
+
+    
+}
+
+function BlinkPlayer()
+{
+    
+    isBlinking = true; // it starts blinking immediaelty
+
+
+    // the interval will change the isBlinking value for a set of 250 ms 
+    // which will then cause the variable in the player functon to change 
+    // the opactiy to 0.2 to 1.0 for a delay of 250 ms. This is repeateely 
+    // happening for 4 seconds
+    
+    const blinkInterval = setInterval(() => {
+        isBlinking = !isBlinking; 
+    }, 250);
+
+    
+    setTimeout(() => {
+        clearInterval(blinkInterval);
+        isBlinking = false; 
+    }, invisibleTimer * 1000);
+}
+
+function VulnerableTimer()
+{
+    isInvulnerable = true; 
+
+    // when collision for player logic gets added 
+    // if(isInvulnerable == true && collisionDetected) 
+    // {
+    //     NO DAMAGE IS TAKEN
+    //     damageTaken = false; (or something like this)
+    // }
+    // This logic should be added to the collision detection function 
+    setTimeout(() => {
+        isInvulnerable = false; 
+    }, 4000);
+}
+
 //main game loop, everything that needs to run in an interval needs to go here
 
 //---- The Main Game loop (where the game actually lives) --//
@@ -209,8 +272,7 @@ function GameLoop()
 
         if(lives > 0)
         {
-            playerX = 175;             
-            playerY = 700;
+            ResetPlayer();
         }
         else
         {
@@ -219,6 +281,18 @@ function GameLoop()
         }
     }
     */
+
+    
+
+    if (lives < tempLives) // this is a placeholder for the collision detection, once it is added this will be removed and the ResetPlayer function will be called in the collision detection function.
+    {
+        ResetPlayer();
+        tempLives = lives; // update tempLives during collision or in this case the manually lives change.
+        return;
+        }
+
+    tempLives = lives; // updates tempLives so when collision doesnt happpen so it doesnt trigger the reset player function.
+
 
     if (lives <= 0)
     {
@@ -247,3 +321,4 @@ Object.defineProperty(window, 'lives', {
     get: () => lives,
     set: (val) => { lives = val; DrawLives(); }
 });
+window.ResetPlayer = ResetPlayer;
