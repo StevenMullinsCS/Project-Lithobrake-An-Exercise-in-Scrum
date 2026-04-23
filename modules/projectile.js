@@ -20,6 +20,8 @@ export function Shoot(playerX)
 //for every projectile, move it up the screen
 export function UpdateProjectile() 
 {
+
+
     for (let i = 0; i < projectiles.length; i++)
     {
         projectiles[i].y -= projSpeed;
@@ -32,13 +34,16 @@ export function UpdateProjectile()
 //for every projectile in the array, draw them
 export function DrawProjectile(ctx) 
 {
-    for (let p of projectiles)
+   
+    
+    for(let p of projectiles)
     {
         ctx.beginPath();
         ctx.rect(p.x, p.y, projW, projH);
         ctx.closePath();
         ctx.fill();
     }
+    
 }
 
 export function CheckCollision()

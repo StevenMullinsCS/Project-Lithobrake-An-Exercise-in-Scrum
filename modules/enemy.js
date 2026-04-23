@@ -57,6 +57,14 @@ export function UpdateEnemy(e)
     }
 }
 
+export function ResetEnemies(canvasWidth)
+{
+    enemies.length = 0
+    projectiles.length = 0;
+    enemySpeed = 1;
+    initEnemies(canvasWidth);
+}
+
 // Iteratively draw the enemies onto the gameplay area based on the amount of enemies in the array produced by initEnemies
 export function DrawEnemy(ctx) 
 { 
@@ -101,6 +109,8 @@ export function EnemyShoot(ctx, enemyX, enemyY)
 // Update the projectile to move it downwards across the canvas.
 export function UpdateProjectile()
 {
+
+
     if(projCD != 0)
     {   
         projCD -= 1;
@@ -115,19 +125,24 @@ export function UpdateProjectile()
 // Draw every projectile in the array.
 export function DrawProjectile(ctx)
 {
-        for(let p of projectiles)
-        {
-            ctx.beginPath();
-            ctx.rect(p.x, p.y, projW, projH);
-            ctx.closePath();
-            ctx.fill();
-        }
+    
+
+    for (let p of projectiles)
+    {
+        ctx.beginPath();
+        ctx.rect(p.x, p.y, projW, projH);
+        ctx.closePath();
+        ctx.fill();
+    }
     
 }
 
 // One method to integrate the enemy's projectile behavior.
 export function EnemyProjBehavior(ctx)
 {
+
+    
+
     if(projCD === 0) // An enemy is randomly chosen after CD hits 0.
     {
         DetermineAttacker(ctx);
