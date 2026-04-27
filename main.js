@@ -1,11 +1,13 @@
-import { Shoot, UpdateProjectile, DrawProjectile, CheckCollision } from "./modules/projectile.js"
-import { DrawEnemy, initEnemies } from "./modules/enemy.js"
+import { Shoot, UpdateProjectile, DrawProjectile, CheckCollision, ClearProjectiles } from "./modules/projectile.js"
+import { DrawEnemy, initEnemies, EnemyProjBehavior, EnemyCheckCollision, ResetEnemies, ClearEnemyProjectiles } from "./modules/enemy.js"
 
 //---- Canvas -- //
 var canvas;
 var ctx;
 var canvasWidth; // canvas width for boundary calculation
 var canvasHeight;
+let hammer;
+
 
 //---- Player -- //
 var playerWidth = 40; // replaced both width and height names for these variable names
@@ -17,11 +19,9 @@ let rightDown = false;
 let leftDown = false;
 var color = "rgb(243, 239, 239)";
 
-
 //---- Page Boolean Values --//
 var gameStarted = false;
 var gameOver = false;
-
 
 //---- Lives --//
 let lives = 3;
@@ -30,6 +30,15 @@ const iconWidth = 20;
 const iconHeight = 20;
 const iconX = 15; // 
 const iconY = 720;  
+
+let tempLives = lives; // stored initial lives to be compared later
+
+
+//---- Invisibility Frames --// 
+const invisibleTimer = 4;
+let isBlinking = false; // tracks if player is currently invulnerable
+let isInvulnerable = false;
+
 
 
 // If either key press is detected, corresponding bool is set to true.
@@ -40,6 +49,7 @@ function onKeyDown(evt)
     {
         Shoot(playerX);
     }
+    
     if (evt.keyCode == 37)
         leftDown = true;
     else if (evt.keyCode == 39)
@@ -55,8 +65,41 @@ function onKeyUp(evt)
         rightDown = false;
 }
 
-//get elements of the canvas
+//sourced from:
+//https://github.com/hammerjs/hammer.js/
+//ideally nothing more needs to be done with it...
+function TouchControls() {
+    hammer.get('pan').set({ direction: Hammer.DIRECTION_HORIZONTAL });
 
+    hammer.on('panstart', (e) => {
+        if (e.center.x < canvasWidth / 2) {
+            leftDown = true;
+            rightDown = false;
+        } else {
+            rightDown = true;
+            leftDown = false;
+        }
+    });
+
+    hammer.on('panmove', (e) => {
+        if (e.deltaX < 0) {
+            leftDown = true;
+            rightDown = false;
+        } else if (e.deltaX > 0) {
+            rightDown = true;
+            leftDown = false;
+        }
+    });
+
+    hammer.on('panend', () => {
+        leftDown = false;
+        rightDown = false;
+    });
+
+    hammer.on('tap', () => {
+        Shoot(playerX);
+    });
+}
 
 //---- Game State Functions --//
 function Init()
@@ -65,47 +108,47 @@ function Init()
     ctx = document.getElementById("canvas").getContext("2d");
     canvasWidth = canvas.width;
     canvasHeight = canvas.height;
+
+    //hammer stuff
+    hammer = new window.Hammer(canvas);
+    TouchControls();
 }
 
 function Start()
 {
-
-    var startPage = document.getElementById("startPage");
-    
+    var startPage = document.getElementById("startPage"); 
     startPage.classList.add("fade-out");
-
     gameStarted = true;
-
     document.getElementById("startPage").style.opacity = "0";
-    
+
     // After the fade finishes, hide it completely so it doesn't block clicks
     setTimeout(() => {
         document.getElementById("startPage").style.display = "none";
+        gameStarted = true;
     }, 1000);
-
-
 }
 
 function Restart()
 {
     var gameOverPage = document.getElementById("gameOverPage");
-    
     gameOverPage.classList.remove("fade-in");
     gameOverPage.classList.add("fade-out");
-
-
     setTimeout(() => 
         {
             gameOverPage.style.display = "none";
             gameOverPage.classList.remove("fade-out");
 
+
+            ResetEnemies(canvasWidth);
+            ClearProjectiles();
+            ClearEnemyProjectiles();
             lives = 3;
-            gameOver = false;
             playerX = 175;             
             playerY = 700;
+            gameOver = false;
+            return;
 
         }, 500);
-    
 }
 
 function GameOver()
@@ -120,18 +163,30 @@ function GameOver()
         gameOverPage.classList.remove('fade-out');
         gameOverPage.classList.add('fade-in');
     }, 50); 
-}
 
+
+    
+}
 
 //---- Player and Drawing Functions --//
 function Player()
 {
+
+    if(gameOver == true)
+    {
+        ctx.clearRect(playerX, playerY, playerWidth, playerHeight);
+        return;
+    }
+
     // Once input is detected, the X position is moved based on left/right key press.
     // Value on the right determines the speed.
     if (rightDown && playerX < canvasWidth - playerWidth- 15) // boundary for right
         playerX += PLAYER_SPEED;
     else if (leftDown && playerX > 15) // boundary for left
         playerX -= PLAYER_SPEED;
+
+    
+    ctx.globalAlpha = isBlinking ? 0.2 : 1.0; //This is being constantly changed by the isBlinking variable in the BlinkPlayer Function.
 
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -140,8 +195,11 @@ function Player()
     ctx.lineTo(playerX + playerWidth, playerY + playerHeight);
     ctx.closePath();
     ctx.fill();
-}
 
+    
+
+    
+}
 
 // Draws the live icon and the number of lives on the 
 // left side on the screen. When the player gets close 
@@ -163,7 +221,6 @@ function DrawLives()
 
 
     // the mini icon
-
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(iconX + (iconWidth / 2), iconY); 
@@ -173,7 +230,6 @@ function DrawLives()
     ctx.fill();
 
     // draws the number of live "x3"
-
     ctx.fillStyle = "white";
     ctx.font = "16px Arial";
     ctx.textAlign = "center";
@@ -183,8 +239,49 @@ function DrawLives()
         
 }
 
-//main game loop, everything that needs to run in an interval needs to go here
 
+function ResetPlayer()
+{
+    playerX = 175;             
+    playerY = 700;
+
+   
+    BlinkPlayer();
+}
+
+function BlinkPlayer()
+{
+    
+    isBlinking = true; // it starts blinking immediaelty
+    VulnerableTimer();
+
+
+    // the interval will change the isBlinking value for a set of 250 ms 
+    // which will then cause the variable in the player functon to change 
+    // the opactiy to 0.2 to 1.0 for a delay of 250 ms. This is repeateely 
+    // happening for 4 seconds
+    
+    const blinkInterval = setInterval(() => {
+        isBlinking = !isBlinking; 
+    }, 250);
+
+    
+    setTimeout(() => {
+        clearInterval(blinkInterval);
+        isBlinking = false; 
+    }, invisibleTimer * 1000);
+}
+
+function VulnerableTimer()
+{
+    isInvulnerable = true; 
+
+    setTimeout(() => {
+        isInvulnerable = false; 
+    }, 4000);
+}
+
+//main game loop, everything that needs to run in an interval needs to go here
 //---- The Main Game loop (where the game actually lives) --//
 function GameLoop()
 {
@@ -199,37 +296,36 @@ function GameLoop()
     DrawLives();
     UpdateProjectile();
     CheckCollision();
-    DrawProjectile(ctx);
-
-
-    /*
-    if()//collison of enemy or collision of projectile
+    DrawProjectile(ctx); 
+    EnemyProjBehavior(ctx);
+    if(EnemyCheckCollision(playerX, playerY, playerWidth, playerHeight))//collison of enemy or collision of projectile
     {
+        if (isInvulnerable)
+        {
+            return;
+        }
+
         lives -= 1;
 
         if(lives > 0)
         {
-            playerX = 175;             
-            playerY = 700;
+            ResetPlayer();
         }
         else
         {
+            gameOver = true;
+            ctx.clearRect(playerX - 20, playerY - 20, playerWidth + 40, playerHeight + 40);
+            Player(); // this is to make sure the player is cleared from the screen before the game over screen appears. 
             GameOver();
-            return
+            return;
         }
     }
-    */
 
-    if (lives <= 0)
-    {
-        gameOver = true;
-        GameOver();
-        return;
-    }
+    
 }
 
 Init();
-initEnemies(canvasWidth, canvasHeight);
+initEnemies(canvasWidth);
 setInterval(GameLoop, 10);
 
 // Event listeners that wait for any keypress. Once a key is pressed or released, corresponding function from above is called.
@@ -239,11 +335,4 @@ window.Start = Start;
 window.DrawLives = DrawLives;
 window.GameOver = GameOver;
 window.Restart = Restart;
-// this allows the lives variable to be changed 
-// inside the code manually so i can chnage the 
-// lives to 0 in order to trigger the game over screen. 
-// Once collision detection is added this will be no longer needed.
-Object.defineProperty(window, 'lives', {
-    get: () => lives,
-    set: (val) => { lives = val; DrawLives(); }
-});
+window.ResetPlayer = ResetPlayer;
