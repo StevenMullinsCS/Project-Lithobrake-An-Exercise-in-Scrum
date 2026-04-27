@@ -41,6 +41,11 @@ let isInvulnerable = false;
 
 
 
+//---- Pause Function --//
+let isPaused = false;
+
+
+
 // If either key press is detected, corresponding bool is set to true.
 function onKeyDown(evt)
 {
@@ -155,6 +160,7 @@ function Restart()
             playerX = 175;             
             playerY = 700;
             gameOver = false;
+            pauseButton.classList.remove("pauseDisabled");
             return;
 
         }, 500);
@@ -164,10 +170,13 @@ function Restart()
 function GameOver()
 {
     var gameOverPage = document.getElementById("gameOverPage");
+    var pauseButton = document.getElementById("pauseButton");
+
     gameOverPage.style.display = "block";
     gameOverPage.classList.remove('fade-in');
     gameOverPage.classList.add('fade-out');
 
+    pauseButton.classList.add("pauseDisabled");
 
     setTimeout(() => {
         gameOverPage.classList.remove('fade-out');
@@ -175,6 +184,52 @@ function GameOver()
     }, 50); 
 
 
+    
+}
+
+function Pause()
+{
+    if(gameOver == true)
+    {
+        return;
+    }
+
+    if(isPaused == false)
+    {
+        isPaused = true;
+        
+    }
+    else
+    {
+        isPaused = false;
+    }
+}
+
+function PausePage()
+{
+
+    var pausePage = document.getElementById("pausePage");
+    var pauseButton = document.getElementById("pauseButton");
+
+
+    if(gameStarted == true)
+    {
+        pauseButton.style.display = "block";
+    }
+
+    
+
+    if(isPaused == true)
+    {
+        pausePage.style.display = "block";
+    }
+    else
+    {
+        pausePage.style.display = "none";
+    }
+
+    
+    
     
 }
 
@@ -300,6 +355,16 @@ function GameLoop()
         return;
     }
 
+    if(isPaused == true)
+    {
+        PausePage();
+        return;
+    }
+    else
+    {
+        PausePage();
+    }
+
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     DrawEnemy(ctx);
     Player();
@@ -345,12 +410,5 @@ window.Start = Start;
 window.DrawLives = DrawLives;
 window.GameOver = GameOver;
 window.Restart = Restart;
-// this allows the lives variable to be changed 
-// inside the code manually so i can chnage the 
-// lives to 0 in order to trigger the game over screen. 
-// Once collision detection is added this will be no longer needed.
-Object.defineProperty(window, 'lives', {
-    get: () => lives,
-    set: (val) => { lives = val; DrawLives(); }
-});
 window.ResetPlayer = ResetPlayer;
+window.Pause = Pause;

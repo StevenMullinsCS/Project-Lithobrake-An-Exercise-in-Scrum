@@ -73,3 +73,33 @@ body
     margin-bottom: 20px;
     margin-left: 95px;
 }
+
+#pauseButton
+{
+    position:absolute;
+    margin-bottom: 750px;
+    margin-left: 320px;
+}
+
+#pageHeaderThree
+{
+    font-size: 50px;
+    color: white;
+    margin-bottom: 10px;
+    text-align: center;
+    padding-right: 5px;
+}
+
+#buttonThree
+{
+    width: 110px;
+    height: 30px;
+    font-size: 20px;
+    margin-bottom: 20px;
+    margin-left: 95px;
+}
+
+#pauseButton.pauseDisabled 
+{
+    pointer-events: none;
+}

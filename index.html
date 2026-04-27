@@ -16,6 +16,8 @@
 
     <canvas id="canvas" width="400" height="800"></canvas>
 
+    <button id="pauseButton" style="display:none" onclick="Pause()">PAUSE</button>
+
     <div id ="startPage" class="pageOverlay">
         <h1 id ="pageHeader">GALAGA</h1>
         <button id="button" onclick="Start()">START GAME</button>
@@ -25,6 +27,11 @@
     <div id="gameOverPage" class="pageOverlay" style="display:none;">
         <h1 id="pageHeaderTwo">GAME OVER</h1>
         <button id="buttonTwo" onclick="Restart()">RESTART</button>
+    </div>
+
+    <div id="pausePage" class="pageOverlay" style="display: none;">
+        <h1 id="pageHeaderThree">PAUSED</h1>
+        <button id="buttonThree" onclick="Pause()">UNPAUSE</button>
     </div>
 
 
