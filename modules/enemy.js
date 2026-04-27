@@ -23,10 +23,6 @@ let projDelay = 120; // Cooldown logic. This is galaga, not a bullet hell, so we
 let projCD = projDelay; // projCD iteratively is reduced, but is set/reset to projDelay after hitting 0.
 
 
-// -- enemy state variables --
-let enemyState = ["Diver", "Shooter", "Both"];
-
-
 
 export function initEnemies(canvasWidth) {
     // Formulas and their implementation determined through working with Google Gemini. Debugging is also present in the chat.
@@ -79,7 +75,17 @@ export function DrawEnemy(ctx)
         var color; // Added for debugging.
         UpdateEnemy(e);
 
-        if (e.type == "Diver") {
+        switch(e.enemyType) // Here, the actual enemy sprites will be applied. Color changing is only here for the sake of debugging, testing.
+        {
+        case "S":
+            color = "rgb(255, 0, 0)";
+            ctx.beginPath();
+            ctx.rect(e.x, e.y, enemyWidth, enemyHeight);
+            ctx.closePath();
+            ctx.fill();
+            break;
+        case "D":
+            color = "rgb(0, 255, 0)";
             const stepH = enemyHeight / 5;
             ctx.beginPath();
             ctx.moveTo(e.x, e.y);
@@ -105,14 +111,9 @@ export function DrawEnemy(ctx)
             ctx.closePath();
             ctx.stroke();
             ctx.fill();
-        }
-        else if (e.type == "Shooter") {
-            ctx.beginPath();
-            ctx.rect(e.x, e.y, enemyWidth, enemyHeight);
-            ctx.closePath();
-            ctx.fill();
-        }
-        else {
+            break;
+        case "M":
+            color = "rgb(0, 0, 255)";
             const centerX = e.x + enemyWidth / 2;
             const sideXLeft = e.x + enemyWidth * 0.18;
             const sideXRight = e.x + enemyWidth * 0.82;
@@ -140,27 +141,11 @@ export function DrawEnemy(ctx)
             ctx.closePath();
             ctx.stroke();
             ctx.fill();
-        }
-        switch(e.enemyType) // Here, the actual enemy sprites will be applied. Color changing is only here for the sake of debugging, testing.
-        {
-        case "S":
-            color = "rgb(255, 0, 0)";
-            break;
-        case "D":
-            color = "rgb(0, 255, 0)";
-            break;
-        case "M":
-            color = "rgb(0, 0, 255)";
             break;
         case "":
             color= "rgb(243, 239, 239)";
             break;
         }   
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.rect(e.x, e.y, enemyWidth, enemyHeight);
-        ctx.closePath();
-        ctx.fill();
     }
 }
 
@@ -170,12 +155,12 @@ export function DetermineAttacker(ctx) {
     for (let e of enemies)   // Iterate through each enemy, determine if they are going to fire or stay inactive. 
     {
 
-        if (e.type == "Diver") {
+        if (e.type == "D") {
             continue; // This is where the diving attack logic will be once its implemented. 
             // For now, Diver type enemies do not fire projectiles, 
             // so we skip to the next enemy in the array.
         }
-        else if (e.type == "Shooter") {
+        else if (e.type == "S") {
             // Going to implement the shooting logic in this block.
             var firingChance;
             Math.floor(firingChance = Math.random() * 1000); // 2% chance to fire.
