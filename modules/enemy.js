@@ -1,9 +1,9 @@
 export const name = "enemy";
 
+/* Enemy Variables */
 let enemies = [];
 export { enemies };
-// If enemy dimensions are too large, they may become clumped up depending on the number of rows and columns, be mindful of this when changing these variables.
-var enemyWidth = 25;
+var enemyWidth = 25; // If enemy dimensions are too large, they may become clumped up depending on the number of rows and columns, be mindful of this when changing these variables.
 var enemyHeight = 25;
 
 
@@ -35,9 +35,11 @@ var currentEnemies = enemyRows * enemyCols;
 
 var edgeMargin = .6;   // Determines how much area around the enemies is empty. The higher the percent, the smaller the margins get.
 var enemySpeed = 1; // Determines the speed at which the enemy moves.
-
-let projectiles = [];
-let projOffset = 15;
+var enemyType = "";
+var extra = Math.floor(Math.random() * 3); // Used to determine which enemy type gets an extra enemy. Outside of loop to avoid it getting reset.
+/* Projectile Variables */
+let projectiles = []; 
+let projOffset = 15; 
 let projSpeed = 10;
 let projW = 2.5;
 let projH = 25;
@@ -47,10 +49,6 @@ let projCD = projDelay; // projCD iteratively is reduced, but is set/reset to pr
 // enemy attacking rate variables //
 let cooldownDecrease = 20;
 let minProjDelay = 40;
-
-// -- enemy state variables --
-let enemyState = ["Diver", "Shooter", "Both"];
-
 
 
 // Help with this function is from: https://chatgpt.com/c/69ec590b-1fac-83ea-9cf4-a6a25f0a5845
@@ -115,14 +113,15 @@ export function initEnemies(canvasWidth) {
 
             let randomEnemy = Math.floor(Math.random() * enemyState.length);
 
+            let type = EnemySetType(i, extra);
             enemies.push(
-                {
-                    x: xStart + (j * (horizStep)),
-                    y: topMargin + enemyHeight + (vertStep * i),
-                    width: enemyWidth,
-                    height: enemyHeight,
-                    type: enemyState[randomEnemy]
-                });
+            {
+                x: xStart + (j * (horizStep)),
+                y: topMargin + enemyHeight + (vertStep * i),
+                width: enemyWidth,
+                height: enemyHeight,
+                enemyType: type
+            });
         }
     }
 
@@ -137,7 +136,7 @@ export function UpdateEnemy(e) {
     // Checks the boundaries. Hardcoded the screen width for the moment, but plan to fix it to be based on the variable.
     if (e.x + enemySpeed <= 0 || (e.x + enemyWidth) + enemySpeed >= 400) {
         // Once the sprite collides with an edge, we multiple by the speed by -1 to change the direction it is moves in.
-        enemySpeed *= -1
+        enemySpeed *= -1;
     }
     else {
         // Moves the enemy along the X axis at a rate defined in the enemySpeed variable if the enemy is not at the edge.
@@ -162,13 +161,24 @@ export function ResetEnemiesAfterDeath()
 }
 
 // Iteratively draw the enemies onto the gameplay area based on the amount of enemies in the array produced by initEnemies
-// source for creating the shapes: https://chatgpt.com/share/69ec5cd2-9e2c-83ea-acc4-4bb5a12db495  the pyramid and circle with feet shape
-export function DrawEnemy(ctx) {
-    for (let i = 0; i < enemies.length; i++) {
+export function DrawEnemy(ctx) 
+{
+    for (let i = 0; i < enemies.length; i++)
+    {
         const e = enemies[i];
+        var color; // Added for debugging.
         UpdateEnemy(e);
 
-        if (e.type == "Diver") {
+        switch(e.enemyType) // Here, the actual enemy sprites will be applied. Color changing is only here for the sake of debugging, testing.
+        {
+        case "S":
+            ctx.beginPath();
+            ctx.rect(e.x, e.y, enemyWidth, enemyHeight);
+            ctx.closePath();
+            ctx.fillStyle = "red";
+            ctx.fill();
+            break;
+        case "D":
             const stepH = enemyHeight / 5;
             ctx.beginPath();
             ctx.moveTo(e.x, e.y);
@@ -193,15 +203,10 @@ export function DrawEnemy(ctx) {
             ctx.lineTo(e.x, e.y + stepH);
             ctx.closePath();
             ctx.stroke();
+            ctx.fillStyle = "green";
             ctx.fill();
-        }
-        else if (e.type == "Shooter") {
-            ctx.beginPath();
-            ctx.rect(e.x, e.y, enemyWidth, enemyHeight);
-            ctx.closePath();
-            ctx.fill();
-        }
-        else {
+            break;
+        case "M":
             const centerX = e.x + enemyWidth / 2;
             const sideXLeft = e.x + enemyWidth * 0.18;
             const sideXRight = e.x + enemyWidth * 0.82;
@@ -228,8 +233,13 @@ export function DrawEnemy(ctx) {
             ctx.lineTo(e.x, bottomY);
             ctx.closePath();
             ctx.stroke();
+            ctx.fillStyle = "blue";
             ctx.fill();
-        }
+            break;
+        case "":
+            color= "rgb(243, 239, 239)";
+            break;
+        }   
     }
 }
 
@@ -239,12 +249,12 @@ export function DetermineAttacker(ctx) {
     for (let e of enemies)   // Iterate through each enemy, determine if they are going to fire or stay inactive. 
     {
 
-        if (e.type == "Diver") {
+        if (e.type == "D") {
             continue; // This is where the diving attack logic will be once its implemented. 
             // For now, Diver type enemies do not fire projectiles, 
             // so we skip to the next enemy in the array.
         }
-        else if (e.type == "Shooter") {
+        else if (e.type == "S") {
             // Going to implement the shooting logic in this block.
             var firingChance;
             Math.floor(firingChance = Math.random() * 1000); // 2% chance to fire.
@@ -345,16 +355,72 @@ export function DrawProjectile(ctx) {
 
 }
 
-export function ClearEnemyProjectiles() {
+export function ClearEnemyProjectiles() 
+{
     projectiles = [];
 }
 
+export function EnemySetType(i, extra)
+{
+    // Individual Variables for rows
+    var shooterRows; 
+    var diverRows;
+    var multiAttackRows;
+    // If rows are not divisible by 3, we will set a row type to randomly have an extra row.
+    if(enemyRows % 3 != 0)
+    {
+        // Row calculations for other rows only done once, then rounded in logic.
+        var otherRows = enemyRows / 3;
+        if(extra == 0)
+        {
+            // Divers gets remainder
+            shooterRows = Math.ceil(otherRows); // One value gets rounded up,
+            multiAttackRows = Math.floor(otherRows); // One gets rounded down.
+            // The above calcs ensure that the remainders get split in a way that still ensures on smaller numbers, like 4, that there is one extra, but as it scales up, there isnt one absurdly large block of extras for one type.
+            diverRows = enemyRows - (shooterRows + multiAttackRows); // Randomly selected value gets whatevers left to add.
+        }
+        else if(extra == 1)
+        {
+            // Multis gets remainder   
+            shooterRows = Math.ceil(otherRows);
+            diverRows = Math.floor(enemyRows / 3);
+            multiAttackRows = enemyRows - (shooterRows + diverRows);
+        }
+        else
+        {
+            // Shooters gets remainder
+            diverRows = Math.ceil(otherRows); 
+            multiAttackRows = Math.floor(otherRows);
+            shooterRows = enemyRows - (diverRows + multiAttackRows);
+        }
+    }
+    else 
+    {
+        // If the number of rows is divisible by 3, we can have even numbered rows. Variable used just so calculation is performed once, not repeated for performance sake.
+        var rows = enemyRows / 3;
+        shooterRows = rows;
+        diverRows = rows;
+        multiAttackRows = rows; 
+    }
+    if(i < shooterRows) // Follows the iteration of the initEnemies loop to ensure that the rows are properly assigned.
+    {
+        return "S"; // Shooters
+    }
+    if(i < diverRows + shooterRows) // We add what has been iterated through to avoid it never checking these conditions. We do this again for "M". 
+    {
+        return "D"; // Divers
+    }
+    if(i < multiAttackRows + diverRows + shooterRows)
+    {
+        return "M"; // Multiattackers
+    }
+}
+
 // One method to integrate the enemy's projectile behavior.
-export function EnemyProjBehavior(ctx) {
-
-
-
-    if (projCD === 0) // An enemy is randomly chosen after CD hits 0.
+export function EnemyProjBehavior(ctx)
+{   
+    // TODO: Add logic for running enemy attack type based on the enemy type.
+    if(projCD === 0) // An enemy is randomly chosen after CD hits 0.
     {
         DetermineAttacker(ctx);
     }

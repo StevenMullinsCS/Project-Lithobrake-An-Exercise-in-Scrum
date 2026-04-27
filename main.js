@@ -121,32 +121,23 @@ function Init()
 
 function Start()
 {
-
-    var startPage = document.getElementById("startPage");
-    
+    var startPage = document.getElementById("startPage"); 
     startPage.classList.add("fade-out");
-
-    
-
+    gameStarted = true;
     document.getElementById("startPage").style.opacity = "0";
-    
+
     // After the fade finishes, hide it completely so it doesn't block clicks
     setTimeout(() => {
         document.getElementById("startPage").style.display = "none";
         gameStarted = true;
     }, 1000);
-
-
 }
 
 function Restart()
 {
     var gameOverPage = document.getElementById("gameOverPage");
-    
     gameOverPage.classList.remove("fade-in");
     gameOverPage.classList.add("fade-out");
-
-
     setTimeout(() => 
         {
             gameOverPage.style.display = "none";
@@ -164,7 +155,6 @@ function Restart()
             return;
 
         }, 500);
-    
 }
 
 function GameOver()
@@ -406,7 +396,7 @@ function GameLoop()
 }
 
 Init();
-initEnemies(canvasWidth, canvasHeight);
+initEnemies(canvasWidth);
 setInterval(GameLoop, 10);
 
 // Event listeners that wait for any keypress. Once a key is pressed or released, corresponding function from above is called.
