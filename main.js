@@ -1,5 +1,5 @@
-import { Shoot, UpdateProjectile, DrawProjectile, CheckCollision } from "./modules/projectile.js"
-import { DrawEnemy, initEnemies, EnemyProjBehavior, EnemyCheckCollision } from "./modules/enemy.js"
+import { Shoot, UpdateProjectile, DrawProjectile, CheckCollision, ClearProjectiles } from "./modules/projectile.js"
+import { DrawEnemy, initEnemies, EnemyProjBehavior, EnemyCheckCollision, ResetEnemies, ClearEnemyProjectiles } from "./modules/enemy.js"
 
 //---- Canvas -- //
 var canvas;
@@ -124,6 +124,7 @@ function Start()
     // After the fade finishes, hide it completely so it doesn't block clicks
     setTimeout(() => {
         document.getElementById("startPage").style.display = "none";
+        gameStarted = true;
     }, 1000);
 }
 
@@ -137,10 +138,15 @@ function Restart()
             gameOverPage.style.display = "none";
             gameOverPage.classList.remove("fade-out");
 
+
+            ResetEnemies(canvasWidth);
+            ClearProjectiles();
+            ClearEnemyProjectiles();
             lives = 3;
-            gameOver = false;
             playerX = 175;             
             playerY = 700;
+            gameOver = false;
+            return;
 
         }, 500);
 }
@@ -157,11 +163,21 @@ function GameOver()
         gameOverPage.classList.remove('fade-out');
         gameOverPage.classList.add('fade-in');
     }, 50); 
+
+
+    
 }
 
 //---- Player and Drawing Functions --//
 function Player()
 {
+
+    if(gameOver == true)
+    {
+        ctx.clearRect(playerX, playerY, playerWidth, playerHeight);
+        return;
+    }
+
     // Once input is detected, the X position is moved based on left/right key press.
     // Value on the right determines the speed.
     if (rightDown && playerX < canvasWidth - playerWidth- 15) // boundary for right
@@ -179,6 +195,10 @@ function Player()
     ctx.lineTo(playerX + playerWidth, playerY + playerHeight);
     ctx.closePath();
     ctx.fill();
+
+    
+
+    
 }
 
 // Draws the live icon and the number of lives on the 
@@ -276,7 +296,7 @@ function GameLoop()
     DrawLives();
     UpdateProjectile();
     CheckCollision();
-    DrawProjectile(ctx);
+    DrawProjectile(ctx); 
     EnemyProjBehavior(ctx);
     if(EnemyCheckCollision(playerX, playerY, playerWidth, playerHeight))//collison of enemy or collision of projectile
     {
@@ -293,17 +313,15 @@ function GameLoop()
         }
         else
         {
+            gameOver = true;
+            ctx.clearRect(playerX - 20, playerY - 20, playerWidth + 40, playerHeight + 40);
+            Player(); // this is to make sure the player is cleared from the screen before the game over screen appears. 
             GameOver();
-            return
+            return;
         }
     }
 
-    if (lives <= 0)
-    {
-        gameOver = true;
-        GameOver();
-        return;
-    }
+    
 }
 
 Init();
