@@ -78,14 +78,13 @@ export function DrawEnemy(ctx)
         switch(e.enemyType) // Here, the actual enemy sprites will be applied. Color changing is only here for the sake of debugging, testing.
         {
         case "S":
-            color = "rgb(255, 0, 0)";
             ctx.beginPath();
             ctx.rect(e.x, e.y, enemyWidth, enemyHeight);
             ctx.closePath();
+            ctx.fillStyle = "red";
             ctx.fill();
             break;
         case "D":
-            color = "rgb(0, 255, 0)";
             const stepH = enemyHeight / 5;
             ctx.beginPath();
             ctx.moveTo(e.x, e.y);
@@ -110,10 +109,10 @@ export function DrawEnemy(ctx)
             ctx.lineTo(e.x, e.y + stepH);
             ctx.closePath();
             ctx.stroke();
+            ctx.fillStyle = "green";
             ctx.fill();
             break;
         case "M":
-            color = "rgb(0, 0, 255)";
             const centerX = e.x + enemyWidth / 2;
             const sideXLeft = e.x + enemyWidth * 0.18;
             const sideXRight = e.x + enemyWidth * 0.82;
@@ -140,6 +139,7 @@ export function DrawEnemy(ctx)
             ctx.lineTo(e.x, bottomY);
             ctx.closePath();
             ctx.stroke();
+            ctx.fillStyle = "blue";
             ctx.fill();
             break;
         case "":
