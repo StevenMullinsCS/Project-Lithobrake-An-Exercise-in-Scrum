@@ -276,28 +276,12 @@ export function DrawProjectile(ctx) {
 
 }
 
-export function ClearEnemyProjectiles() {
+export function ClearEnemyProjectiles() 
+{
     projectiles = [];
 }
 
-// One method to integrate the enemy's projectile behavior.
-export function EnemyProjBehavior(ctx) {
-
-
-
-    if (projCD === 0) // An enemy is randomly chosen after CD hits 0.
-export function DrawProjectile(ctx)
-{
-    for(let p of projectiles)
-    {
-        ctx.beginPath();
-        ctx.rect(p.x, p.y, projW, projH);
-        ctx.closePath();
-        ctx.fill();
-    }
-}
-
-export function  EnemySetType(i, extra)
+export function EnemySetType(i, extra)
 {
     // Individual Variables for rows
     var shooterRows; 
