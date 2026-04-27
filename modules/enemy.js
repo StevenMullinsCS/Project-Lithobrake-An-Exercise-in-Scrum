@@ -159,6 +159,15 @@ export function ResetEnemies(canvasWidth) {
     BlinkEnemies();
 }
 
+export function ResetEnemiesAfterGameOver(canvasWidth) {
+    enemies.length = 0
+    projectiles.length = 0;
+    enemySpeed = 1;
+    initEnemies(canvasWidth);
+}
+
+
+
 
 export function BlinkEnemies()
 {

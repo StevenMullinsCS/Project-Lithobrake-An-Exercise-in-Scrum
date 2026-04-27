@@ -1,5 +1,5 @@
 import { Shoot, UpdateProjectile, DrawProjectile, CheckCollision, ClearProjectiles } from "./modules/projectile.js"
-import { DrawEnemy, initEnemies, EnemyProjBehavior, EnemyCheckCollision, ResetEnemies, ClearEnemyProjectiles, ProceduralGenEnemies, ResetEnemiesAfterDeath } from "./modules/enemy.js"
+import { DrawEnemy, initEnemies, EnemyProjBehavior, EnemyCheckCollision, ResetEnemies, ClearEnemyProjectiles, ProceduralGenEnemies, ResetEnemiesAfterDeath, ResetEnemiesAfterGameOver } from "./modules/enemy.js"
 
 //---- Canvas -- //
 var canvas;
@@ -161,7 +161,7 @@ function Restart()
             gameOverPage.classList.remove("fade-out");
 
 
-            ResetEnemies(canvasWidth);
+            ResetEnemiesAfterGameOver(canvasWidth)
             ClearProjectiles();
             ClearEnemyProjectiles();
             lives = 3;
