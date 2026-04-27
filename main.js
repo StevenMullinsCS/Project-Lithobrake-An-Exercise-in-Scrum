@@ -47,6 +47,8 @@ let isPaused = false;
 
 //---- Sound Effects --//
 const playerShoot = new Audio("soundEffects\\mrfriends-pistol-shot-233473.mp3");
+const playerDeath = new Audio("soundEffects\\freesound_community-pixel-death-66829.mp3");
+const spawnEnemies = new Audio("soundEffects\\freesound_community-pixel-sound-effect-4-82881.mp3");
 
 
 
@@ -58,9 +60,12 @@ function onKeyDown(evt)
     {
         Shoot(playerX);
 
-
-        const shootingCopy = playerShoot.cloneNode();
-        shootingCopy.play();
+        if(gameStarted == true && gameOver == false && isPaused == false)
+        {
+            const shootingCopy = playerShoot.cloneNode();
+            shootingCopy.play();
+        }
+        
     }
     
     if (evt.keyCode == 37)
@@ -111,6 +116,12 @@ function TouchControls() {
 
     hammer.on('tap', () => {
         Shoot(playerX);
+
+        if(gameStarted == true && gameOver == false && isPaused == false)
+        {
+            const shootingCopy = playerShoot.cloneNode();
+            shootingCopy.play();
+        }
     });
 }
 
@@ -142,6 +153,8 @@ function Start()
     setTimeout(() => {
         document.getElementById("startPage").style.display = "none";
         gameStarted = true;
+        const spawnCopy = spawnEnemies.cloneNode();
+        spawnCopy.play();
     }, 1000);
 
 
@@ -162,6 +175,7 @@ function Restart()
 
 
             ResetEnemiesAfterGameOver(canvasWidth)
+            spawnEnemies.play();
             ClearProjectiles();
             ClearEnemyProjectiles();
             lives = 3;
@@ -391,6 +405,7 @@ function GameLoop()
         }
 
         lives -= 1;
+        playerDeath.play();
 
         if(lives > 0)
         {
@@ -409,6 +424,8 @@ function GameLoop()
 
 
     ProceduralGenEnemies(canvasWidth);
+    
+    
 
     
 }

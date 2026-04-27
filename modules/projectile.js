@@ -8,6 +8,10 @@ let projSpeed = 10;
 let projW = 10;
 let projH = 20;
 
+
+const enemyDeath = new Audio("soundEffects\\lumora_studios-pixel-explosion-319166.mp3")
+
+
 //push a projectile into the array 
 export function Shoot(playerX) 
 {
@@ -81,6 +85,8 @@ export function CheckCollision()
                 //js array manip is weird, splicing replaces the object in the array
                 projectiles.splice(i, 1);
                 enemies.splice(j, 1);
+                const enemyDeathClone = enemyDeath.cloneNode();
+                enemyDeath.play();
                 break;
             }
         }

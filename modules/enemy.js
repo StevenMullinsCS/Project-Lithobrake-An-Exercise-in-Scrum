@@ -51,10 +51,16 @@ let minProjDelay = 40;
 // -- enemy state variables --
 let enemyState = ["Diver", "Shooter", "Both"];
 
-
+//-- blinking variables --//
 var isBlinking = false;
 var isInvulnerable = false;
 var enemyVulnerablity = 2;
+
+
+//-- sound effects --//
+const laserShot = new Audio("soundEffects\\ribhavagrawal-laser-shot-ingame-230500.mp3");
+const spawnEnemies = new Audio("soundEffects\\freesound_community-pixel-sound-effect-4-82881.mp3");
+
 
 
 
@@ -73,7 +79,7 @@ export function ProceduralGenEnemies(canvasWidth)
             currentEnemies = Math.min(currentEnemies + enemiesAdded, maxEnemies);
             projDelay = Math.max(projDelay - cooldownDecrease, minProjDelay);
             projCD = projDelay;
-            ResetEnemies(canvasWidth)
+            ResetEnemies(canvasWidth);
             spawnTimer = 0;
         }
     }
@@ -134,6 +140,9 @@ export function initEnemies(canvasWidth) {
 
     enemiesCreated++;
 
+    const spawnCopy = spawnEnemies.cloneNode();
+    spawnCopy.play();
+
      
 
 }
@@ -157,6 +166,9 @@ export function ResetEnemies(canvasWidth) {
     enemySpeed = 1;
     initEnemies(canvasWidth);
     BlinkEnemies();
+
+    const spawnCopy = spawnEnemies.cloneNode();
+    spawnCopy.play();
 }
 
 export function ResetEnemiesAfterGameOver(canvasWidth) {
@@ -164,6 +176,9 @@ export function ResetEnemiesAfterGameOver(canvasWidth) {
     projectiles.length = 0;
     enemySpeed = 1;
     initEnemies(canvasWidth);
+
+    const spawnCopy = spawnEnemies.cloneNode();
+    spawnCopy.play();
 }
 
 
@@ -305,6 +320,8 @@ export function DetermineAttacker(ctx) {
             Math.floor(firingChance = Math.random() * 1000); // 2% chance to fire.
             if (firingChance > 980) {
                 EnemyShoot(ctx, e.x, e.y, e.type);
+                const laserShotCopy = laserShot.cloneNode();
+                laserShotCopy.play();
                 projCD = projDelay; // Reset cooldown timer.
                 break;
             }
@@ -316,6 +333,8 @@ export function DetermineAttacker(ctx) {
             Math.floor(firingChance = Math.random() * 1000); // 2% chance to fire.
             if (firingChance > 980) {
                 EnemyShoot(ctx, e.x, e.y, e.type);
+                const laserShotCopy = laserShot.cloneNode();
+                laserShotCopy.play();
                 projCD = projDelay; // Reset cooldown timer.
                 break;
             }
@@ -357,7 +376,6 @@ export function EnemyShoot(ctx, enemyX, enemyY, enemyType) {
         y: enemyY,
         type: enemyType
     });
-
 }
 
 // Update the projectile to move it downwards across the canvas.
@@ -406,8 +424,12 @@ export function ClearEnemyProjectiles() {
 
 // One method to integrate the enemy's projectile behavior.
 export function EnemyProjBehavior(ctx) {
-
-
+    if (isInvulnerable == true)
+    {
+        UpdateProjectile();
+        DrawProjectile(ctx);
+        return;
+    }
 
     if (projCD === 0) // An enemy is randomly chosen after CD hits 0.
     {
