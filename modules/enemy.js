@@ -52,6 +52,8 @@ let minProjDelay = 40;
 let enemyState = ["Diver", "Shooter", "Both"];
 
 
+
+// Help with this function is from: https://chatgpt.com/c/69ec590b-1fac-83ea-9cf4-a6a25f0a5845
 export function ProceduralGenEnemies(canvasWidth)
 {
     // when all enemies die, it has a 3 second delay until the next wave starts(feel free to change this value)
