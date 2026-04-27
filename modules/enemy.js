@@ -5,11 +5,35 @@ let enemies = [];
 export { enemies };
 var enemyWidth = 25; // If enemy dimensions are too large, they may become clumped up depending on the number of rows and columns, be mindful of this when changing these variables.
 var enemyHeight = 25;
+
+
 var enemyRows = 5;
 var enemyCols = 5;
 var padding = 25;     // Adjusts the space between the enemies.
 var topMargin = 25;   // Reserved free space at the top for UI elements.
-var edgeMargin = .6; // Determines how much area around the enemies is empty. The higher the percent, the smaller the margins get.
+
+
+// calculating the max enemies the game can spawn within a specific area by using the padding and sizes of each enemy
+var hSpace = enemyWidth + padding;
+var vSpace = enemyHeight + padding;
+var maxCol = Math.floor(400 / hSpace);
+var maxRow = Math.floor(300 / vSpace);
+var maxEnemies = maxCol * maxRow;
+
+//this is for how much time after all enemies are dead to spawn a new wave of enemies all at once
+var spawnTimer = 0;
+var spawnDeplay = 300;
+
+// this calculates how many enemies are being added each wave by capping the enemies at 48 and setting starting enemies when game is over
+var enemiesAdded = 5;
+var startingEnemies = enemyRows * enemyCols;
+var currentEnemies = enemyRows * enemyCols;
+
+
+
+
+
+var edgeMargin = .6;   // Determines how much area around the enemies is empty. The higher the percent, the smaller the margins get.
 var enemySpeed = 1; // Determines the speed at which the enemy moves.
 var enemyType = "";
 var extra = Math.floor(Math.random() * 3); // Used to determine which enemy type gets an extra enemy. Outside of loop to avoid it getting reset.
@@ -22,17 +46,73 @@ let projH = 25;
 let projDelay = 120; // Cooldown logic. This is galaga, not a bullet hell, so we only want one projectile launched at a time, at least for now.
 let projCD = projDelay; // projCD iteratively is reduced, but is set/reset to projDelay after hitting 0.
 
+// enemy attacking rate variables //
+let cooldownDecrease = 20;
+let minProjDelay = 40;
+
+
+// Help with this function is from: https://chatgpt.com/c/69ec590b-1fac-83ea-9cf4-a6a25f0a5845
+export function ProceduralGenEnemies(canvasWidth)
+{
+    // when all enemies die, it has a 3 second delay until the next wave starts(feel free to change this value)
+    if(enemies.length == 0)
+    {
+        spawnTimer++;
+
+        // projDelay and projCD are basically values that determine how fast enemies can attack after a 20 percentage decrease in delay making it faster
+        if(spawnTimer >= spawnDeplay)
+        {
+            currentEnemies = Math.min(currentEnemies + enemiesAdded, maxEnemies);
+            projDelay = Math.max(projDelay - cooldownDecrease, minProjDelay);
+            projCD = projDelay;
+            ResetEnemies(canvasWidth)
+            spawnTimer = 0;
+        }
+    }
+    else
+    {
+        spawnTimer = 0;
+    }
+
+    
+}
+
 
 
 export function initEnemies(canvasWidth) {
     // Formulas and their implementation determined through working with Google Gemini. Debugging is also present in the chat.
     // The conversation log can be found at: https://gemini.google.com/share/bb4e01533925
     // the logic will now have to be changed here to put the specific type of enemies to there designated rows. (This hasnt been started on)
+
+
+    // creates an enemy one at a time, the rows and colums are calculated to determine how many enemies need to be added to the collection (array)
+    // enemyCols is to visually see the spacing of the enemies because if you have maxCol varaible it forces the enemies to be more compacted by fitting them
+    // so we set enemyCol to five to fit 5 enemies for each column, keeping the original spacing the same.
+    // when enemies that are created are equal to the current enemies that are suppose to be on the field it stops generating enemies. It does this calculation before hand
+    
+
+    //Going to be working on the animation to where they spread out and back in the near future
+
+    let enemiesCreated = 0;
+    enemyCols = 5;
+    enemyRows = Math.ceil(currentEnemies / enemyCols);
+
     var xStart = (canvasWidth - (canvasWidth * edgeMargin)) / 2;
     var horizStep = ((canvasWidth * edgeMargin) - enemyWidth) / (enemyCols - 1);
+    var vertStep = enemyHeight + padding;
+
     for (let i = 0; i < enemyRows; i++) {
         for (let j = 0; j < enemyCols; j++) {
-            var vertStep = enemyHeight + padding;
+            
+
+            if (enemiesCreated >= currentEnemies) 
+            {
+                return;
+            }
+
+
+            let randomEnemy = Math.floor(Math.random() * enemyState.length);
+
             let type = EnemySetType(i, extra);
             enemies.push(
             {
@@ -44,6 +124,11 @@ export function initEnemies(canvasWidth) {
             });
         }
     }
+
+    enemiesCreated++;
+
+     
+
 }
 
 // Updates each enemy that is passed into the functions' position 
@@ -64,6 +149,15 @@ export function ResetEnemies(canvasWidth) {
     projectiles.length = 0;
     enemySpeed = 1;
     initEnemies(canvasWidth);
+}
+
+// this function resets all enemies back to theire original values after game is over
+export function ResetEnemiesAfterDeath()
+{
+    currentEnemies = startingEnemies;
+    spawnTimer = 0;
+    projDelay = 120;
+    projCD = projDelay;
 }
 
 // Iteratively draw the enemies onto the gameplay area based on the amount of enemies in the array produced by initEnemies

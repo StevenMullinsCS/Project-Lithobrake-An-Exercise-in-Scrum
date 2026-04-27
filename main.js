@@ -1,5 +1,5 @@
 import { Shoot, UpdateProjectile, DrawProjectile, CheckCollision, ClearProjectiles } from "./modules/projectile.js"
-import { DrawEnemy, initEnemies, EnemyProjBehavior, EnemyCheckCollision, ResetEnemies, ClearEnemyProjectiles } from "./modules/enemy.js"
+import { DrawEnemy, initEnemies, EnemyProjBehavior, EnemyCheckCollision, ResetEnemies, ClearEnemyProjectiles, ProceduralGenEnemies, ResetEnemiesAfterDeath } from "./modules/enemy.js"
 
 //---- Canvas -- //
 var canvas;
@@ -38,6 +38,11 @@ let tempLives = lives; // stored initial lives to be compared later
 const invisibleTimer = 4;
 let isBlinking = false; // tracks if player is currently invulnerable
 let isInvulnerable = false;
+
+
+
+//---- Pause Function --//
+let isPaused = false;
 
 
 
@@ -146,6 +151,7 @@ function Restart()
             playerX = 175;             
             playerY = 700;
             gameOver = false;
+            pauseButton.classList.remove("pauseDisabled");
             return;
 
         }, 500);
@@ -154,10 +160,13 @@ function Restart()
 function GameOver()
 {
     var gameOverPage = document.getElementById("gameOverPage");
+    var pauseButton = document.getElementById("pauseButton");
+
     gameOverPage.style.display = "block";
     gameOverPage.classList.remove('fade-in');
     gameOverPage.classList.add('fade-out');
 
+    pauseButton.classList.add("pauseDisabled");
 
     setTimeout(() => {
         gameOverPage.classList.remove('fade-out');
@@ -165,6 +174,54 @@ function GameOver()
     }, 50); 
 
 
+    
+}
+
+function Pause()
+{
+    if(gameOver == true)
+    {
+        return;
+    }
+
+    if(isPaused == false)
+    {
+        isPaused = true;
+        
+    }
+    else
+    {
+        isPaused = false;
+    }
+}
+
+function PausePage()
+{
+
+    var pausePage = document.getElementById("pausePage");
+    var pauseButton = document.getElementById("pauseButton");
+
+
+    if(gameStarted == true)
+    {
+        pauseButton.style.display = "block";
+    }
+
+    
+
+    if(isPaused == true)
+    {
+        pausePage.style.display = "block";
+        pauseButton.classList.add("pauseDisabled");
+    }
+    else
+    {
+        pausePage.style.display = "none";
+        pauseButton.classList.remove("pauseDisabled");
+    }
+
+    
+    
     
 }
 
@@ -290,6 +347,16 @@ function GameLoop()
         return;
     }
 
+    if(isPaused == true)
+    {
+        PausePage();
+        return;
+    }
+    else
+    {
+        PausePage();
+    }
+
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     DrawEnemy(ctx);
     Player();
@@ -317,9 +384,13 @@ function GameLoop()
             ctx.clearRect(playerX - 20, playerY - 20, playerWidth + 40, playerHeight + 40);
             Player(); // this is to make sure the player is cleared from the screen before the game over screen appears. 
             GameOver();
+            ResetEnemiesAfterDeath();
             return;
         }
     }
+
+
+    ProceduralGenEnemies(canvasWidth);
 
     
 }
@@ -336,3 +407,4 @@ window.DrawLives = DrawLives;
 window.GameOver = GameOver;
 window.Restart = Restart;
 window.ResetPlayer = ResetPlayer;
+window.Pause = Pause;
