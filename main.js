@@ -116,31 +116,22 @@ function Init()
 
 function Start()
 {
-
-    var startPage = document.getElementById("startPage");
-    
+    var startPage = document.getElementById("startPage"); 
     startPage.classList.add("fade-out");
-
     gameStarted = true;
-
     document.getElementById("startPage").style.opacity = "0";
-    
+
     // After the fade finishes, hide it completely so it doesn't block clicks
     setTimeout(() => {
         document.getElementById("startPage").style.display = "none";
     }, 1000);
-
-
 }
 
 function Restart()
 {
     var gameOverPage = document.getElementById("gameOverPage");
-    
     gameOverPage.classList.remove("fade-in");
     gameOverPage.classList.add("fade-out");
-
-
     setTimeout(() => 
         {
             gameOverPage.style.display = "none";
@@ -152,7 +143,6 @@ function Restart()
             playerY = 700;
 
         }, 500);
-    
 }
 
 function GameOver()
@@ -317,7 +307,7 @@ function GameLoop()
 }
 
 Init();
-initEnemies(canvasWidth, canvasHeight);
+initEnemies(canvasWidth);
 setInterval(GameLoop, 10);
 
 // Event listeners that wait for any keypress. Once a key is pressed or released, corresponding function from above is called.
@@ -327,12 +317,4 @@ window.Start = Start;
 window.DrawLives = DrawLives;
 window.GameOver = GameOver;
 window.Restart = Restart;
-// this allows the lives variable to be changed 
-// inside the code manually so i can chnage the 
-// lives to 0 in order to trigger the game over screen. 
-// Once collision detection is added this will be no longer needed.
-Object.defineProperty(window, 'lives', {
-    get: () => lives,
-    set: (val) => { lives = val; DrawLives(); }
-});
 window.ResetPlayer = ResetPlayer;
