@@ -10,18 +10,23 @@ var enemySpriteWidth = 60;
 var enemySpriteHeight = 60;
 
 
-var enemyRows = 5;
 var enemyCols = 5;
-var padding = 50;     // Adjusts the space between the enemies.
+var startingRows = 2;
+var enemyRows = startingRows;
+var padding = 25;     // Adjusts the space between the enemies.
+var formationPadding = 50
 var topMargin = 25;   // Reserved free space at the top for UI elements.
 
 
 // calculating the max enemies the game can spawn within a specific area by using the padding and sizes of each enemy
 var hSpace = enemyWidth + padding;
 var vSpace = enemyHeight + padding;
-var maxCol = Math.floor(400 / hSpace);
+
+var maxCol = enemyCols;
 var maxRow = Math.floor(300 / vSpace);
-var maxEnemies = maxCol * maxRow;
+
+var maxEnemyRows = Math.min(maxRow, 6);
+var maxEnemies = enemyCols * maxEnemyRows;
 
 //this is for how much time after all enemies are dead to spawn a new wave of enemies all at once
 var spawnTimer = 0;
@@ -29,15 +34,15 @@ var spawnDeplay = 300;
 
 // this calculates how many enemies are being added each wave by capping the enemies at 48 and setting starting enemies when game is over
 var enemiesAdded = 5;
-var startingEnemies = enemyRows * enemyCols;
-var currentEnemies = enemyRows * enemyCols;
+var startingEnemies = startingRows * enemyCols;
+var currentEnemies = startingRows * enemyCols;
 
 
 
 
 
-var edgeMargin = .65;   // Determines how much area around the enemies is empty. The higher the percent, the smaller the margins get.
-var enemySpeed = 1; // Determines the speed at which the enemy moves.
+var edgeMargin = 0.7;   // Determines how much area around the enemies is empty. The higher the percent, the smaller the margins get.
+var enemySpeed = 0.8; // Determines the speed at which the enemy moves.
 
 let projectiles = [];
 let projOffset = 15;
@@ -121,8 +126,8 @@ export function initEnemies(canvasWidth) {
     enemyRows = Math.ceil(currentEnemies / enemyCols);
 
     var xStart = (canvasWidth - (canvasWidth * edgeMargin)) / 2;
-    var horizStep = ((canvasWidth * edgeMargin) - enemyWidth) / (enemyCols - 1);
-    var vertStep = enemyHeight + padding;
+    var horizStep = ((canvasWidth * edgeMargin) - enemyWidth) / (enemyCols - 1)
+    var vertStep = enemyHeight + formationPadding;
 
     for (let i = 0; i < enemyRows; i++) {
         for (let j = 0; j < enemyCols; j++) {
@@ -140,8 +145,8 @@ export function initEnemies(canvasWidth) {
                 {
                     x: xStart + (j * (horizStep)),
                     y: topMargin + enemyHeight + (vertStep * i),
-                    width: enemyWidth,
-                    height: enemyHeight,
+                    width: enemySpriteWidth,
+                    height: enemySpriteHeight,
                     type: enemyState[randomEnemy]
                 });
 
@@ -178,7 +183,7 @@ export function UpdateEnemy(e) {
 export function ResetEnemies(canvasWidth) {
     enemies.length = 0
     projectiles.length = 0;
-    enemySpeed = 1;
+    enemySpeed = 0.8;
     initEnemies(canvasWidth);
     BlinkEnemies();
 
@@ -189,7 +194,7 @@ export function ResetEnemies(canvasWidth) {
 export function ResetEnemiesAfterGameOver(canvasWidth) {
     enemies.length = 0
     projectiles.length = 0;
-    enemySpeed = 1;
+    enemySpeed = 0.8;
     initEnemies(canvasWidth);
 
     const spawnCopy = spawnEnemies.cloneNode();
