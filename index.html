@@ -7,33 +7,32 @@
             
         </style>
     </head>
-</html>
-<body>
-   
-    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
-    <script type="module" src="main.js"></script>
+    <body>
+    
+        <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+        <script type="module" src="main.js"></script>
 
 
     <canvas id="canvas" width="400" height="800"></canvas>
 
-    <button id="pauseButton" style="display:none" onclick="Pause()">PAUSE</button>
+    <button id="pauseButton" style="display:none" onclick="Pause()">
+            <img src="assets/pauseButton.png" alt="Pause">
+    </button>
 
-    <div id ="startPage" class="pageOverlay">
-        <h1 id ="pageHeader">GALAGA</h1>
-        <button id="button" onclick="Start()">START GAME</button>
-    </div>
+        <div id ="startPage" class="pageOverlay">
+            <h1 id ="pageHeader">GALAGA</h1>
+            <button id="button" onclick="Start()">START GAME</button>
+        </div>
 
-    
-    <div id="gameOverPage" class="pageOverlay" style="display:none;">
-        <h1 id="pageHeaderTwo">GAME OVER</h1>
-        <button id="buttonTwo" onclick="Restart()">RESTART</button>
-    </div>
+        
+        <div id="gameOverPage" class="pageOverlay" style="display:none;">
+            <h1 id="pageHeaderTwo">GAME OVER</h1>
+            <button id="buttonTwo" onclick="Restart()">RESTART</button>
+        </div>
 
-    <div id="pausePage" class="pageOverlay" style="display: none;">
-        <h1 id="pageHeaderThree">PAUSED</h1>
-        <button id="buttonThree" onclick="Pause()">UNPAUSE</button>
-    </div>
-
-
-
-</body>
+        <div id="pausePage" class="pageOverlay" style="display: none;">
+            <h1 id="pageHeaderThree">PAUSED</h1>
+            <button id="buttonThree" onclick="Pause()">UNPAUSE</button>
+        </div>
+    </body>
+</html>

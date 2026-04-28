@@ -10,8 +10,8 @@ let hammer;
 
 
 //---- Player -- //
-var playerWidth = 40; // replaced both width and height names for these variable names
-var playerHeight = 40;
+var playerWidth = 60; // replaced both width and height names for these variable names
+var playerHeight = 60;
 const PLAYER_SPEED = 3;   // Speed at which the player moves.
 let playerX = 175;             // Center/Home position for player. Outside of player scope to allow for persistance after changes.
 let playerY = 700;
@@ -51,12 +51,15 @@ const playerDeath = new Audio("soundEffects\\freesound_community-pixel-death-668
 const spawnEnemies = new Audio("soundEffects\\freesound_community-pixel-sound-effect-4-82881.mp3");
 
 
+//---- Assets --//
+const playerSprite = new Image();
+playerSprite.src = "assets/player.png";
 
 // If either key press is detected, corresponding bool is set to true.
 function onKeyDown(evt)
 {
     //spacebar shoots
-    if (evt.keyCode == 32)
+    if (evt.keyCode == 32 && !evt.repeat)
     {
         Shoot(playerX);
 
@@ -138,6 +141,7 @@ function Init()
     TouchControls();
 }
 
+
 function Start()
 {
 
@@ -194,7 +198,7 @@ function GameOver()
     var gameOverPage = document.getElementById("gameOverPage");
     var pauseButton = document.getElementById("pauseButton");
 
-    gameOverPage.style.display = "block";
+    gameOverPage.style.display = "flex";
     gameOverPage.classList.remove('fade-in');
     gameOverPage.classList.add('fade-out');
 
@@ -236,14 +240,14 @@ function PausePage()
 
     if(gameStarted == true)
     {
-        pauseButton.style.display = "block";
+        pauseButton.style.display = "flex";
     }
 
     
 
     if(isPaused == true)
     {
-        pausePage.style.display = "block";
+        pausePage.style.display = "flex";
         pauseButton.classList.add("pauseDisabled");
     }
     else
@@ -277,13 +281,7 @@ function Player()
     
     ctx.globalAlpha = isBlinking ? 0.2 : 1.0; //This is being constantly changed by the isBlinking variable in the BlinkPlayer Function.
 
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(playerX + (playerWidth / 2), playerY); 
-    ctx.lineTo(playerX, playerY + playerHeight); 
-    ctx.lineTo(playerX + playerWidth, playerY + playerHeight);
-    ctx.closePath();
-    ctx.fill();
+    ctx.drawImage(playerSprite, playerX, playerY, playerWidth, playerHeight);
 
     
 
@@ -374,6 +372,7 @@ function VulnerableTimer()
 //---- The Main Game loop (where the game actually lives) --//
 function GameLoop()
 {
+    
     if(!gameStarted || gameOver)
     {
         return;
@@ -429,6 +428,7 @@ function GameLoop()
 
     
 }
+
 
 Init();
 initEnemies(canvasWidth, canvasHeight);

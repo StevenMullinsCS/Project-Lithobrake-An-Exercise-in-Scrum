@@ -6,10 +6,13 @@ export { enemies };
 var enemyWidth = 25;
 var enemyHeight = 25;
 
+var enemySpriteWidth = 60;
+var enemySpriteHeight = 60;
+
 
 var enemyRows = 5;
 var enemyCols = 5;
-var padding = 25;     // Adjusts the space between the enemies.
+var padding = 50;     // Adjusts the space between the enemies.
 var topMargin = 25;   // Reserved free space at the top for UI elements.
 
 
@@ -33,7 +36,7 @@ var currentEnemies = enemyRows * enemyCols;
 
 
 
-var edgeMargin = .6;   // Determines how much area around the enemies is empty. The higher the percent, the smaller the margins get.
+var edgeMargin = .65;   // Determines how much area around the enemies is empty. The higher the percent, the smaller the margins get.
 var enemySpeed = 1; // Determines the speed at which the enemy moves.
 
 let projectiles = [];
@@ -63,7 +66,13 @@ const spawnEnemies = new Audio("soundEffects\\freesound_community-pixel-sound-ef
 
 
 
-
+//-- Assets --//
+const shooterSprite = new Image();
+shooterSprite.src = "assets/shooter.png";
+const diverSprite = new Image();
+diverSprite.src = "assets/diver.png";
+const bothSprite = new Image();
+bothSprite.src = "assets/both.png";
 
 // Help with this function is from: https://chatgpt.com/c/69ec590b-1fac-83ea-9cf4-a6a25f0a5845
 export function ProceduralGenEnemies(canvasWidth)
@@ -152,12 +161,16 @@ export function initEnemies(canvasWidth) {
 // Updates each enemy that is passed into the functions' position 
 export function UpdateEnemy(e) {
     // Checks the boundaries. Hardcoded the screen width for the moment, but plan to fix it to be based on the variable.
-    if (e.x + enemySpeed <= 0 || (e.x + enemyWidth) + enemySpeed >= 400) {
-        // Once the sprite collides with an edge, we multiple by the speed by -1 to change the direction it is moves in.
-        enemySpeed *= -1
+    let leftSpriteEdge = e.x;
+    let rightSpriteEdge = e.x + enemySpriteWidth;
+
+    if (
+        leftSpriteEdge + enemySpeed <= 0 ||
+        rightSpriteEdge + enemySpeed >= 400
+    ) {
+        enemySpeed *= -1;
     }
     else {
-        // Moves the enemy along the X axis at a rate defined in the enemySpeed variable if the enemy is not at the edge.
         e.x += enemySpeed;
     }
 }
@@ -238,67 +251,17 @@ export function DrawEnemy(ctx) {
         ctx.globalAlpha = isBlinking ? 0.2 : 1.0;
 
 
-        if (e.type == "Diver") {
-            const stepH = enemyHeight / 5;
-            ctx.beginPath();
-            ctx.moveTo(e.x, e.y);
-            ctx.lineTo(e.x + enemyWidth, e.y);
-            ctx.lineTo(e.x + enemyWidth, e.y + stepH);
-            ctx.lineTo(e.x + enemyWidth * 0.9, e.y + stepH);
-            ctx.lineTo(e.x + enemyWidth * 0.9, e.y + stepH * 2);
-            ctx.lineTo(e.x + enemyWidth * 0.8, e.y + stepH * 2);
-            ctx.lineTo(e.x + enemyWidth * 0.8, e.y + stepH * 3);
-            ctx.lineTo(e.x + enemyWidth * 0.7, e.y + stepH * 3);
-            ctx.lineTo(e.x + enemyWidth * 0.7, e.y + stepH * 4);
-            ctx.lineTo(e.x + enemyWidth * 0.6, e.y + stepH * 4);
-            ctx.lineTo(e.x + enemyWidth * 0.6, e.y + enemyHeight);
-            ctx.lineTo(e.x + enemyWidth * 0.4, e.y + enemyHeight);
-            ctx.lineTo(e.x + enemyWidth * 0.4, e.y + stepH * 4);
-            ctx.lineTo(e.x + enemyWidth * 0.3, e.y + stepH * 4);
-            ctx.lineTo(e.x + enemyWidth * 0.3, e.y + stepH * 3);
-            ctx.lineTo(e.x + enemyWidth * 0.2, e.y + stepH * 3);
-            ctx.lineTo(e.x + enemyWidth * 0.2, e.y + stepH * 2);
-            ctx.lineTo(e.x + enemyWidth * 0.1, e.y + stepH * 2);
-            ctx.lineTo(e.x + enemyWidth * 0.1, e.y + stepH);
-            ctx.lineTo(e.x, e.y + stepH);
-            ctx.closePath();
-            ctx.stroke();
-            ctx.fill();
+        if (e.type == "Diver") 
+        {
+            ctx.drawImage(diverSprite, e.x, e.y, enemySpriteWidth, enemySpriteHeight);
         }
-        else if (e.type == "Shooter") {
-            ctx.beginPath();
-            ctx.rect(e.x, e.y, enemyWidth, enemyHeight);
-            ctx.closePath();
-            ctx.fill();
+        else if (e.type == "Shooter") 
+        {
+            ctx.drawImage(shooterSprite, e.x, e.y, enemySpriteWidth, enemySpriteHeight);
         }
-        else {
-            const centerX = e.x + enemyWidth / 2;
-            const sideXLeft = e.x + enemyWidth * 0.18;
-            const sideXRight = e.x + enemyWidth * 0.82;
-            const arcCenterY = e.y + enemyHeight * 0.45;
-            const footTopY = e.y + enemyHeight * 0.72;
-            const bottomY = e.y + enemyHeight;
-            const notchLeftX = e.x + enemyWidth * 0.38;
-            const notchRightX = e.x + enemyWidth * 0.62;
-            const notchTopY = e.y + enemyHeight * 0.78;
-            const radius = sideXRight - centerX;
-            ctx.beginPath();
-            ctx.moveTo(e.x, bottomY);
-            ctx.lineTo(e.x, footTopY);
-            ctx.lineTo(sideXLeft, footTopY);
-            ctx.lineTo(sideXLeft, arcCenterY);
-            ctx.arc(centerX, arcCenterY, radius, Math.PI, 0, false);
-            ctx.lineTo(sideXRight, footTopY);
-            ctx.lineTo(e.x + enemyWidth, footTopY);
-            ctx.lineTo(e.x + enemyWidth, bottomY);
-            ctx.lineTo(notchRightX, bottomY);
-            ctx.lineTo(notchRightX, notchTopY);
-            ctx.lineTo(notchLeftX, notchTopY);
-            ctx.lineTo(notchLeftX, bottomY);
-            ctx.lineTo(e.x, bottomY);
-            ctx.closePath();
-            ctx.stroke();
-            ctx.fill();
+        else 
+        {
+            ctx.drawImage(bothSprite, e.x, e.y, enemySpriteWidth, enemySpriteHeight)
         }
 
         ctx.restore();
