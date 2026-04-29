@@ -111,7 +111,6 @@ export function initEnemies(canvasWidth) {
             }
 
 
-            let randomEnemy = Math.floor(Math.random() * enemyState.length);
 
             let type = EnemySetType(i, extra);
             enemies.push(
@@ -122,10 +121,12 @@ export function initEnemies(canvasWidth) {
                 height: enemyHeight,
                 enemyType: type
             });
+
+            enemiesCreated++;
         }
     }
 
-    enemiesCreated++;
+    
 
      
 
